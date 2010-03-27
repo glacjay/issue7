@@ -1,0 +1,8 @@
+issue7:
+	main.go
+
+env.a:
+	env.go
+
+ast.a:
+	ast.go
