@@ -16,6 +16,7 @@ func main() {
 	parseArgs()
 	ast.InitPackages()
 	ast.InitLex()
+	ast.InitType()
 }
 
 func parseArgs() {
