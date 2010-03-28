@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"./ast"
+	"./gen"
 )
 
 var (
@@ -17,6 +18,7 @@ func main() {
 	ast.InitPackages()
 	ast.InitLex()
 	ast.InitType()
+	gen.InitGen()
 }
 
 func parseArgs() {
