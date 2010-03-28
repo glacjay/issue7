@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"container/list"
+)
+
 type SymInit struct {
 	name  string
 	lex   int
@@ -13,14 +17,18 @@ var InitialSyms = [...]SymInit{
 }
 
 type Sym struct {
-	Name string
-	Lex  int
+	Name  string
+	Lex   int
+	Def   *Node
+	Block int
+	Pkg   *Pkg
 }
 
 var allSyms = make(map[*Pkg](map[string]*Sym))
+var dclStack = list.New()
 
 func LookupSym(name string) *Sym {
-	return LookupPkgSym(name, localPkg)
+	return LookupPkgSym(name, LocalPkg)
 }
 
 func LookupPkgSym(name string, pkg *Pkg) (s *Sym) {
@@ -39,4 +47,17 @@ func LookupPkgSym(name string, pkg *Pkg) (s *Sym) {
 	s.Name = name
 	p[name] = s
 	return s
+}
+
+func pushSym() *Sym {
+	s := new(Sym)
+	dclStack.PushBack(s)
+	return s
+}
+
+func copySym(d, s *Sym) {
+	d.Pkg = s.Pkg
+	d.Name = s.Name
+	d.Def = s.Def
+	d.Block = s.Block
 }

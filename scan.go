@@ -44,7 +44,7 @@ func SetInputFile(name string) os.Error {
 	if err != nil {
 		return err
 	}
-	CurBlock = 1
+	ast.CurBlock = 1
 	curIO.next()
 	return nil
 }

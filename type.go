@@ -49,13 +49,13 @@ func GetType(etype int) *Type {
 	return t
 }
 
-func FuncType(this *Node, in, out NodeList) *Type {
+func FuncType(this *Node, in, out *NodeList) *Type {
 	t := GetType(TYFUNC)
 	t.Type = GenStruct(nil, TYFUNC)
 	return t
 }
 
-func GenStruct(l NodeList, etype int) *Type {
+func GenStruct(l *NodeList, etype int) *Type {
 	funcArg := false
 	if etype == TYFUNC {
 		funcArg = true

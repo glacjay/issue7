@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"./ast"
+	"./env"
 	"./parse"
 )
 
@@ -16,10 +17,10 @@ var (
 
 func main() {
 	parseArgs()
-	ast.InitPackages()
+	ast.InitPkgs()
 	ast.InitLex()
 	ast.InitType()
-	parse.InitGen()
+	ast.InitGen()
 	for inFile := range inFiles.Iter() {
 		err := parse.SetInputFile(inFile.(string))
 		if err != nil {
@@ -28,6 +29,9 @@ func main() {
 			os.Exit(1)
 		}
 		parse.Parse()
+	}
+	if outFile == "" {
+		outFile = fmt.Sprintf("%s.%c", ast.LocalPkg.Name, env.TheChar)
 	}
 }
 

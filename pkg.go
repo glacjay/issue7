@@ -2,24 +2,25 @@ package ast
 
 import (
 	"fmt"
+	"os"
 )
 
 type Pkg struct {
-	name   string
-	path   string
-	prefix string
+	Name   string
+	Path   string
+	Prefix string
 }
 
 var (
-	localPkg *Pkg
+	LocalPkg *Pkg
 )
 
 var allPackages = make(map[string]*Pkg)
 
-func InitPackages() {
+func InitPkgs() {
 	// TODO
-	localPkg = GetPkg("")
-	localPkg.prefix = `""`
+	LocalPkg = GetPkg("")
+	LocalPkg.Prefix = `""`
 }
 
 func GetPkg(path string) *Pkg {
@@ -31,6 +32,25 @@ func GetPkg(path string) *Pkg {
 	p = &Pkg{"", path, pathToPrefix(path)}
 	allPackages[path] = p
 	return p
+}
+
+func MakePkg(name string) {
+	if LocalPkg.Name == "" {
+		if name == "_" {
+			fmt.Fprintf(os.Stderr, "invalid package name _")
+		}
+		LocalPkg.Name = name
+	} else {
+		if LocalPkg.Name != name {
+			fmt.Fprintf(os.Stderr, "package %s; expected %s", name, LocalPkg.Name)
+		}
+
+		for _, s := range allSyms[LocalPkg] {
+			if s.Def == nil {
+				continue
+			}
+		}
+	}
 }
 
 func pathToPrefix(path string) string {

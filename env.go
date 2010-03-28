@@ -6,14 +6,14 @@ import (
 )
 
 const (
-	theChar   = '8'
-	theString = "386"
+	TheChar   = '8'
+	TheString = "386"
 )
 
 var (
 	GoRoot string
 	GoOS   string
-	GoArch string = theString
+	GoArch string = TheString
 )
 
 func init() {
