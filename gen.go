@@ -1,4 +1,4 @@
-package gen
+package parse
 
 const ( // ???
 	PXXX = iota

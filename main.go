@@ -2,10 +2,11 @@ package main
 
 import (
 	"container/list"
+	"fmt"
 	"os"
 
 	"./ast"
-	"./gen"
+	"./parse"
 )
 
 var (
@@ -18,7 +19,16 @@ func main() {
 	ast.InitPackages()
 	ast.InitLex()
 	ast.InitType()
-	gen.InitGen()
+	parse.InitGen()
+	for inFile := range inFiles.Iter() {
+		err := parse.SetInputFile(inFile.(string))
+		if err != nil {
+			fmt.Printf("Cannot open and read input file '%s': %v",
+				inFile, err)
+			os.Exit(1)
+		}
+		parse.Parse()
+	}
 }
 
 func parseArgs() {
