@@ -3,6 +3,7 @@ package main
 import (
 	"container/list"
 	"fmt"
+	"os"
 )
 
 type Node struct {
@@ -15,6 +16,7 @@ type Node struct {
 
 	funcName *Node
 	funcDcl  *NodeList
+	funcBody *NodeList
 
 	funcType *Node
 	defn     *Node
@@ -33,7 +35,8 @@ func (nl *NodeList) PushBackNList(nl2 *NodeList) {
 var (
 	ExternDcl *NodeList
 
-	CurFunc *Node
+	CurFunc   *Node
+	FuncDepth int
 )
 
 func makeNode(op int, left, right *Node) *Node {
@@ -148,3 +151,13 @@ func isBlank(n *Node) bool {
 	}
 	return n.sym.name == "_"
 }
+
+func (n *Node) doFuncBody() {
+	if DclCtx != PAUTO {
+		fmt.Fprintf(os.Stderr, "funcBody(): DclCtx\n")
+		os.Exit(1)
+	}
+	popDcl()
+}
+
+func popDcl() {}

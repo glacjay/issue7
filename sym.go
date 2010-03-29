@@ -24,8 +24,10 @@ type Sym struct {
 	pkg   *Pkg
 }
 
-var AllSyms = make(map[*Pkg](map[string]*Sym))
-var DclStack = list.New()
+var (
+	AllSyms  = make(map[*Pkg](map[string]*Sym))
+	DclStack = list.New()
+)
 
 func lookupSym(name string) *Sym {
 	return lookupPkgSym(name, LocalPkg)
@@ -60,4 +62,13 @@ func copySym(d, s *Sym) {
 	d.name = s.name
 	d.def = s.def
 	d.block = s.block
+}
+
+func testDclStack() {
+	for d := range DclStack.Iter() {
+		if d.(*Sym).name == "" {
+			Error("mark left on the stack")
+			continue
+		}
+	}
 }

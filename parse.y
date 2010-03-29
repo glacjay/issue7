@@ -21,6 +21,7 @@ import (
 %type <node> dcl_name
 %type <node> xfunc_dcl func_dcl
 
+%type <list> func_body
 %type <list> xdcl xdcl_list
 
 %left NotPackage
@@ -43,11 +44,19 @@ package:
 	{ makePkg($2.name) }
 
 xdcl_list:
-	{ $$ = newNodeList() }
+	{ $$ = nil }
 |	xdcl_list xdcl ';'
+	{
+		$$ = $1
+		$$.PushBackNList($2)
+		testDclStack()
+	}
 
 xdcl:
-	{}
+	{
+		Error("empty top-level declaration")
+		$$ = nil
+	}
 |	xfunc_dcl
 	{
 		$$ = newNodeList()
@@ -58,6 +67,11 @@ xfunc_dcl:
 	LXFUNC func_dcl func_body
 	{
 		$$ = $2
+		if $$ == nil {
+			break
+		}
+		$$.funcBody = $3
+		$$.doFuncBody()
 	}
 
 func_dcl:
@@ -71,8 +85,9 @@ func_dcl:
 	}
 
 func_body:
-	{}
+	{ $$ = nil }
 |	'{' '}'
+	{ $$ = nil }
 
 dcl_name:
 	sym
