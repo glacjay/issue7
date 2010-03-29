@@ -1,13 +1,8 @@
-package ast
+package main
 
-const (
-	LXFUNC = iota
-	LXPACKAGE
-)
-
-func InitLex() {
+func initLex() {
 	for _, s := range InitialSyms {
-		sym := LookupSym(s.name)
-		sym.Lex = s.lex
+		sym := lookupSym(s.name)
+		sym.lex = s.lex
 	}
 }

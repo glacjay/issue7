@@ -1,4 +1,4 @@
-package ast
+package main
 
 import (
 	"container/list"
@@ -6,24 +6,28 @@ import (
 )
 
 type Node struct {
-	Op    int
-	Sym   *Sym
-	Type  *Type
-	Class int
+	op    int
+	sym   *Sym
+	type_ *Type
+	class int
 
-	Addrable bool
+	addrable bool
 
-	FuncName *Node
-	FuncDcl  *NodeList
+	funcName *Node
+	funcDcl  *NodeList
 
-	FuncType *Node
-	Defn     *Node
+	funcType *Node
+	defn     *Node
 
-	GenVar int
+	genVar int
 }
 
 type NodeList struct {
 	*list.List
+}
+
+func (nl *NodeList) PushBackNList(nl2 *NodeList) {
+	nl.List.PushBackList(nl2.List)
 }
 
 var (
@@ -32,71 +36,71 @@ var (
 	CurFunc *Node
 )
 
-func MakeNode(op int, left, right *Node) *Node {
+func makeNode(op int, left, right *Node) *Node {
 	n := new(Node)
-	n.Op = op
+	n.op = op
 	return n
 }
 
-func DclName(sym *Sym) *Node {
-	if DclCtx == PEXTERN && sym.Block <= 1 {
-		if sym.Def == nil {
+func dclName(sym *Sym) *Node {
+	if DclCtx == PEXTERN && sym.block <= 1 {
+		if sym.def == nil {
 			oldName(sym)
 		}
-		if sym.Def.Op == OPNONAME {
-			return sym.Def
+		if sym.def.op == OPNONAME {
+			return sym.def
 		}
 	}
 
 	n := newName(sym)
-	n.Op = OPNONAME
+	n.op = OPNONAME
 	return n
 }
 
 var (
-	genInit int
-	genType int
-	genVar  int
+	GenInit int
+	GenType int
+	GenVar  int
 )
 
-func RenameInit(n *Node) *Node {
-	s := n.Sym
-	if s == nil || s.Name != "init" {
+func renameInit(n *Node) *Node {
+	s := n.sym
+	if s == nil || s.name != "init" {
 		return n
 	}
-	genInit++
-	s = LookupSym(fmt.Sprintf("init\xc2\xb7%d", genInit))
+	GenInit++
+	s = lookupSym(fmt.Sprintf("init\xc2\xb7%d", GenInit))
 	return newName(s)
 }
 
-func DeclareFuncHeader(n *Node) {
-	if n.FuncName != nil {
-		n.FuncName.Op = OPNAME
-		declare(n.FuncName, PFUNC)
-		n.FuncName.Defn = n
+func declareFuncHeader(n *Node) {
+	if n.funcName != nil {
+		n.funcName.op = OPNAME
+		declare(n.funcName, PFUNC)
+		n.funcName.defn = n
 	}
 }
 
-func NewNodeList() *NodeList {
+func newNodeList() *NodeList {
 	return &NodeList{list.New()}
 }
 
 func oldName(s *Sym) *Node {
-	n := s.Def
+	n := s.def
 	if n == nil {
 		n = newName(s)
-		n.Op = OPNONAME
-		s.Def = n
+		n.op = OPNONAME
+		s.def = n
 	}
 
 	return n
 }
 
 func newName(s *Sym) *Node {
-	n := MakeNode(OPNAME, nil, nil)
-	n.Sym = s
-	n.Type = nil
-	n.Addrable = true
+	n := makeNode(OPNAME, nil, nil)
+	n.sym = s
+	n.type_ = nil
+	n.addrable = true
 	return n
 }
 
@@ -105,7 +109,7 @@ func declare(n *Node, ctx int) {
 		return
 	}
 
-	s := n.Sym
+	s := n.sym
 	gen := 0
 	if ctx == PEXTERN {
 		ExternDcl.PushBack(n)
@@ -114,22 +118,22 @@ func declare(n *Node, ctx int) {
 			// TODO
 		}
 		if CurFunc != nil {
-			CurFunc.FuncDcl.PushBack(n)
+			CurFunc.funcDcl.PushBack(n)
 		}
-		if n.Op == OPTYPE {
-			genType++
-			gen = genType
-		} else if n.Op == OPNAME {
-			genVar++
-			gen = genVar
+		if n.op == OPTYPE {
+			GenType++
+			gen = GenType
+		} else if n.op == OPNAME {
+			GenVar++
+			gen = GenVar
 		}
 		pushDcl(s)
 	}
 
-	s.Block = CurBlock
-	s.Def = n
-	n.GenVar = gen
-	n.Class = ctx
+	s.block = CurBlock
+	s.def = n
+	n.genVar = gen
+	n.class = ctx
 }
 
 func pushDcl(s *Sym) *Sym {
@@ -139,8 +143,8 @@ func pushDcl(s *Sym) *Sym {
 }
 
 func isBlank(n *Node) bool {
-	if n == nil || n.Sym == nil {
+	if n == nil || n.sym == nil {
 		return false
 	}
-	return n.Sym.Name == "_"
+	return n.sym.name == "_"
 }

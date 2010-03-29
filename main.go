@@ -4,34 +4,30 @@ import (
 	"container/list"
 	"fmt"
 	"os"
-
-	"./ast"
-	"./env"
-	"./parse"
 )
 
 var (
-	outFile string
-	inFiles = list.New()
+	OutFile string
+	InFiles = list.New()
 )
 
 func main() {
 	parseArgs()
-	ast.InitPkgs()
-	ast.InitLex()
-	ast.InitType()
-	ast.InitGen()
-	for inFile := range inFiles.Iter() {
-		err := parse.SetInputFile(inFile.(string))
+	initPkgs()
+	initLex()
+	initType()
+	initGen()
+	for inFile := range InFiles.Iter() {
+		err := setInputFile(inFile.(string))
 		if err != nil {
 			fmt.Printf("Cannot open and read input file '%s': %v",
 				inFile, err)
 			os.Exit(1)
 		}
-		parse.Parse()
+		Parse()
 	}
-	if outFile == "" {
-		outFile = fmt.Sprintf("%s.%c", ast.LocalPkg.Name, env.TheChar)
+	if OutFile == "" {
+		OutFile = fmt.Sprintf("%s.%c", LocalPkg.name, TheChar)
 	}
 }
 
@@ -61,17 +57,17 @@ func parseArgs() {
 				if param == "" {
 					usage()
 				}
-				outFile = param
+				OutFile = param
 				i += delta
 			default:
 				usage()
 			}
 		} else {
-			inFiles.PushBack(argv)
+			InFiles.PushBack(argv)
 		}
 	}
 
-	if inFiles.Len() < 1 {
+	if InFiles.Len() < 1 {
 		usage()
 	}
 }

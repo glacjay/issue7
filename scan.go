@@ -1,12 +1,10 @@
-package parse
+package main
 
 import (
 	"io/ioutil"
 	"os"
 	"unicode"
 	"utf8"
-
-	"./ast"
 )
 
 type IO struct {
@@ -35,17 +33,17 @@ func (io *IO) next() int {
 	return io.ch
 }
 
-var curIO *IO
+var CurIO *IO
 
-func SetInputFile(name string) os.Error {
-	curIO = new(IO)
-	curIO.inFile = name
-	err := curIO.readEntireFile()
+func setInputFile(name string) os.Error {
+	CurIO = new(IO)
+	CurIO.inFile = name
+	err := CurIO.readEntireFile()
 	if err != nil {
 		return err
 	}
-	ast.CurBlock = 1
-	curIO.next()
+	CurBlock = 1
+	CurIO.next()
 	return nil
 }
 
@@ -55,13 +53,13 @@ func nextToken() int {
 }
 
 func nextRealToken() int {
-	c := curIO.ch
+	c := CurIO.ch
 
 	for unicode.IsSpace(c) {
-		if c == '\n' && curIO.nlSemi {
+		if c == '\n' && CurIO.nlSemi {
 			return ';'
 		}
-		curIO.next()
+		CurIO.next()
 	}
 
 	if c < 0 {
@@ -70,16 +68,16 @@ func nextRealToken() int {
 
 	if unicode.IsLetter(c) || c == '_' {
 		buf := ""
-		for ; unicode.IsLetter(c) || unicode.IsDigit(c) || c == '_'; c = curIO.next() {
+		for ; unicode.IsLetter(c) || unicode.IsDigit(c) || c == '_'; c = CurIO.next() {
 			buf += string(c)
 		}
 
-		s := ast.LookupSym(buf)
-		switch s.Lex {
+		s := lookupSym(buf)
+		switch s.lex {
 		// TODO LXIGNORE and LoopHack
 		}
 		yylval.sym = s
-		return s.Lex
+		return s.lex
 	}
 
 	if unicode.IsDigit(c) {
@@ -96,6 +94,6 @@ func nextRealToken() int {
 	return 0
 
 lx:
-	curIO.next()
+	CurIO.next()
 	return c
 }

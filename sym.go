@@ -1,4 +1,4 @@
-package ast
+package main
 
 import (
 	"container/list"
@@ -17,47 +17,47 @@ var InitialSyms = [...]SymInit{
 }
 
 type Sym struct {
-	Name  string
-	Lex   int
-	Def   *Node
-	Block int
-	Pkg   *Pkg
+	name  string
+	lex   int
+	def   *Node
+	block int
+	pkg   *Pkg
 }
 
-var allSyms = make(map[*Pkg](map[string]*Sym))
-var dclStack = list.New()
+var AllSyms = make(map[*Pkg](map[string]*Sym))
+var DclStack = list.New()
 
-func LookupSym(name string) *Sym {
-	return LookupPkgSym(name, LocalPkg)
+func lookupSym(name string) *Sym {
+	return lookupPkgSym(name, LocalPkg)
 }
 
-func LookupPkgSym(name string, pkg *Pkg) (s *Sym) {
-	p, ok := allSyms[pkg]
+func lookupPkgSym(name string, pkg *Pkg) (s *Sym) {
+	p, ok := AllSyms[pkg]
 	if ok {
 		s, ok = p[name]
 		if ok {
 			return s
 		}
 	} else {
-		allSyms[pkg] = make(map[string]*Sym)
-		p = allSyms[pkg]
+		AllSyms[pkg] = make(map[string]*Sym)
+		p = AllSyms[pkg]
 	}
 
 	s = new(Sym)
-	s.Name = name
+	s.name = name
 	p[name] = s
 	return s
 }
 
 func pushSym() *Sym {
 	s := new(Sym)
-	dclStack.PushBack(s)
+	DclStack.PushBack(s)
 	return s
 }
 
 func copySym(d, s *Sym) {
-	d.Pkg = s.Pkg
-	d.Name = s.Name
-	d.Def = s.Def
-	d.Block = s.Block
+	d.pkg = s.pkg
+	d.name = s.name
+	d.def = s.def
+	d.block = s.block
 }

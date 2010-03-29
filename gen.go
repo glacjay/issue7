@@ -1,4 +1,4 @@
-package ast
+package main
 
 const ( // ???
 	PXXX = iota
@@ -20,7 +20,7 @@ var (
 	CurBlock int
 )
 
-func InitGen() {
+func initGen() {
 	MaxBlock = 1
 	DclCtx = PEXTERN
 }

@@ -1,4 +1,4 @@
-package ast
+package main
 
 import (
 	"fmt"
@@ -6,47 +6,49 @@ import (
 )
 
 type Pkg struct {
-	Name   string
-	Path   string
-	Prefix string
+	name   string
+	path   string
+	prefix string
 }
 
 var (
 	LocalPkg *Pkg
+
+	PkgTree *NodeList
 )
 
-var allPackages = make(map[string]*Pkg)
+var AllPackages = make(map[string]*Pkg)
 
-func InitPkgs() {
+func initPkgs() {
 	// TODO
-	LocalPkg = GetPkg("")
-	LocalPkg.Prefix = `""`
+	LocalPkg = getPkg("")
+	LocalPkg.prefix = `""`
 }
 
-func GetPkg(path string) *Pkg {
-	p, ok := allPackages[path]
+func getPkg(path string) *Pkg {
+	p, ok := AllPackages[path]
 	if ok {
 		return p
 	}
 
 	p = &Pkg{"", path, pathToPrefix(path)}
-	allPackages[path] = p
+	AllPackages[path] = p
 	return p
 }
 
-func MakePkg(name string) {
-	if LocalPkg.Name == "" {
+func makePkg(name string) {
+	if LocalPkg.name == "" {
 		if name == "_" {
 			fmt.Fprintf(os.Stderr, "invalid package name _")
 		}
-		LocalPkg.Name = name
+		LocalPkg.name = name
 	} else {
-		if LocalPkg.Name != name {
-			fmt.Fprintf(os.Stderr, "package %s; expected %s", name, LocalPkg.Name)
+		if LocalPkg.name != name {
+			fmt.Fprintf(os.Stderr, "package %s; expected %s", name, LocalPkg.name)
 		}
 
-		for _, s := range allSyms[LocalPkg] {
-			if s.Def == nil {
+		for _, s := range AllSyms[LocalPkg] {
+			if s.def == nil {
 				continue
 			}
 		}

@@ -1,17 +1,15 @@
 %{
-package parse
+package main
 
 import (
 	"fmt"
-
-	"./ast"
 )
 %}
 
 %union {
-	sym  *ast.Sym
-	node *ast.Node
-	list *ast.NodeList
+	sym  *Sym
+	node *Node
+	list *NodeList
 }
 
 %token <sym> LXFUNC
@@ -33,25 +31,26 @@ import (
 file:
 	package
 	xdcl_list
+	{ PkgTree.PushBackNList($2) }
 
 package:
 	%prec NotPackage
 	{
 		Error("package statement must be first")
-		ast.MakePkg("main")
+		makePkg("main")
 	}
 |	LXPACKAGE sym ';'
-	{ ast.MakePkg($2.Name) }
+	{ makePkg($2.name) }
 
 xdcl_list:
-	{ $$ = ast.NewNodeList() }
+	{ $$ = newNodeList() }
 |	xdcl_list xdcl ';'
 
 xdcl:
 	{}
 |	xfunc_dcl
 	{
-		$$ = ast.NewNodeList()
+		$$ = newNodeList()
 		$$.PushBack($1)
 	}
 
@@ -64,11 +63,11 @@ xfunc_dcl:
 func_dcl:
 	dcl_name '(' ')'
 	{
-		$$ = ast.MakeNode(ast.OPDCLFUNC, nil, nil)
-		$$.FuncName = $1
-		$$.FuncName = ast.RenameInit($1)
-		n := ast.MakeNode(ast.OPTFUNC, nil, nil)
-		$$.FuncName.FuncType = n
+		$$ = makeNode(OPDCLFUNC, nil, nil)
+		$$.funcName = $1
+		$$.funcName = renameInit($1)
+		n := makeNode(OPTFUNC, nil, nil)
+		$$.funcName.funcType = n
 	}
 
 func_body:
@@ -77,7 +76,7 @@ func_body:
 
 dcl_name:
 	sym
-	{ $$ = ast.DclName($1) }
+	{ $$ = dclName($1) }
 
 sym:
 	LXNAME

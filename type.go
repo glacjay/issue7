@@ -1,4 +1,4 @@
-package ast
+package main
 
 const (
 	TYXXX = iota
@@ -13,55 +13,55 @@ const (
 )
 
 const (
-	ptrType = TYPTR32
+	PtrType = TYPTR32
 )
 
 type Type struct {
-	EType int
-	Type  *Type
+	etype int
+	type_ *Type
 
-	IsFuncArg bool
+	isFuncArg bool
 }
 
 type TypeProp struct {
-	typ *Type
+	type_ *Type
 
-	Direct  int // direct used type
-	OkForEq bool
+	direct  int // direct used type
+	okForEq bool
 }
 
 var Types [NTYPE]TypeProp
 
-func InitType() {
+func initType() {
 	for i, tp := range Types {
-		tp.Direct = i
+		tp.direct = i
 	}
 
 	t := &Types[TYFUNC]
-	t.Direct = ptrType
-	t.OkForEq = true
-	t.typ = FuncType(nil, nil, nil)
+	t.direct = PtrType
+	t.okForEq = true
+	t.type_ = funcType(nil, nil, nil)
 }
 
-func GetType(etype int) *Type {
+func getType(etype int) *Type {
 	t := new(Type)
-	t.EType = etype
+	t.etype = etype
 	return t
 }
 
-func FuncType(this *Node, in, out *NodeList) *Type {
-	t := GetType(TYFUNC)
-	t.Type = GenStruct(nil, TYFUNC)
+func funcType(this *Node, in, out *NodeList) *Type {
+	t := getType(TYFUNC)
+	t.type_ = genStruct(nil, TYFUNC)
 	return t
 }
 
-func GenStruct(l *NodeList, etype int) *Type {
+func genStruct(l *NodeList, etype int) *Type {
 	funcArg := false
 	if etype == TYFUNC {
 		funcArg = true
 		etype = TYSTRUCT
 	}
-	t := GetType(etype)
-	t.IsFuncArg = funcArg
+	t := getType(etype)
+	t.isFuncArg = funcArg
 	return t
 }
