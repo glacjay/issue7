@@ -29,6 +29,8 @@ func main() {
 	if OutFile == "" {
 		OutFile = fmt.Sprintf("%s.%c", LocalPkg.name, TheChar)
 	}
+	testDclStack()
+	makePkg(LocalPkg.name)
 }
 
 func parseArgs() {

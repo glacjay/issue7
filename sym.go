@@ -72,3 +72,18 @@ func testDclStack() {
 		}
 	}
 }
+
+func postCheckLex() {
+	for _, s := range InitialSyms {
+		lex := s.lex
+		if lex != LXNAME {
+			continue
+		}
+		s2 := lookupSym(s.name)
+		s2.lex = lex
+
+		etype := s.etype
+		if etype != TYXXX {
+		}
+	}
+}
