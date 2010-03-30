@@ -82,12 +82,16 @@ func_dcl:
 		$$.funcName = renameInit($1)
 		n := makeNode(OPTFUNC, nil, nil)
 		$$.funcName.funcType = n
+		$$.doFuncHeader()
 	}
 
 func_body:
 	{ $$ = nil }
 |	'{' '}'
-	{ $$ = nil }
+	{
+		$$ = newNodeList()
+		$$.PushBack(makeNode(OPEMPTY, nil, nil))
+	}
 
 dcl_name:
 	sym

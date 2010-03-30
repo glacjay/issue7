@@ -163,7 +163,7 @@ func (n *Node) doFuncBody() {
 func popDcl() {
 	found := false
 	for d := DclStack.Front(); d != nil; d = d.Next() {
-		dcl := d.Data.(*Sym)
+		dcl := d.Value.(*Sym)
 		if dcl.name == "" {
 			found = true
 			CurBlock = dcl.block
@@ -175,5 +175,13 @@ func popDcl() {
 	if !found {
 		fmt.Fprintf(os.Stderr, "popdcl: no mark\n")
 		os.Exit(1)
+	}
+}
+
+func (n *Node) doFuncHeader() {
+	if n.funcName != nil {
+		n.funcName.op = OPNAME
+		declare(n.funcName, PFUNC)
+		n.funcName.defn = n
 	}
 }
