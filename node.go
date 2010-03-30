@@ -160,4 +160,20 @@ func (n *Node) doFuncBody() {
 	popDcl()
 }
 
-func popDcl() {}
+func popDcl() {
+	found := false
+	for d := DclStack.Front(); d != nil; d = d.Next() {
+		dcl := d.Data.(*Sym)
+		if dcl.name == "" {
+			found = true
+			CurBlock = dcl.block
+			break
+		}
+		s := lookupPkgSym(dcl.name, dcl.pkg)
+		copySym(s, dcl)
+	}
+	if !found {
+		fmt.Fprintf(os.Stderr, "popdcl: no mark\n")
+		os.Exit(1)
+	}
+}
